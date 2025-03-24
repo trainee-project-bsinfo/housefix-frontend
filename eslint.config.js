@@ -29,6 +29,10 @@ export default tseslint.config(
       react,
     },
     rules: {
+      "@typescript-eslint/no-unsafe-member-access": "warn",
+      "@typescript-eslint/no-unsafe-call": "warn",
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": [
         "warn",
