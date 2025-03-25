@@ -9,7 +9,8 @@ import {
 import Paper from "@mui/material/Paper";
 import { CustomDataTableToolbar } from "./CustomDataTableToolbar";
 
-const paginationModel = { page: 0, pageSize: 5 };
+const pageSizeOptions = [10, 20, 50];
+const paginationModel = { page: 0, pageSize: pageSizeOptions[0] };
 
 export const DataTable = ({
   className,
@@ -44,7 +45,7 @@ export const DataTable = ({
         rows={rows}
         columns={columns}
         initialState={{ pagination: { paginationModel } }}
-        pageSizeOptions={[5, 10]}
+        pageSizeOptions={pageSizeOptions}
         disableRowSelectionOnClick
         editMode="row"
         rowModesModel={rowModesModel}

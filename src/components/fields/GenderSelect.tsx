@@ -9,6 +9,7 @@ interface Props {
   defaultValue?: string;
   withPlaceholder?: boolean;
   onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  noLabel?: boolean;
 }
 
 export const GenderSelect = ({
@@ -17,6 +18,7 @@ export const GenderSelect = ({
   defaultValue,
   withPlaceholder,
   onChange,
+  noLabel,
 }: Props) => {
   const [value, setValue] = useState(defaultValue);
 
@@ -32,7 +34,7 @@ export const GenderSelect = ({
   return (
     <TextField
       select
-      label="Geschlecht"
+      label={noLabel ? undefined : "Geschlecht"}
       name="gender"
       required={required}
       value={value}

@@ -1,88 +1,108 @@
-import { Snackbar, Alert } from "@mui/material";
-import {
-  GridRowModesModel,
-  GridRowId,
-  GridValidRowModel,
-  GridRowModes,
-  GridColDef,
-  GridActionsCellItem,
-} from "@mui/x-data-grid";
-import { DateField } from "@mui/x-date-pickers";
-import { useRef, useState, useCallback, useMemo } from "react";
+import "./page.css";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { DataTable } from "../components/data-table/DataTable";
 import { getApiBaseUrl } from "../helper/getApiBaseUrl";
-import { getLocalDateFormat } from "../helper/getLocalDateFormat";
-import { translateGender } from "../helper/translate/translateGender";
-import { useMutation } from "../hooks/useMutation";
 import { useQuery } from "../hooks/useQuery";
-import { Customer, Customers } from "../interfaces/Customers";
-import { Gender } from "../interfaces/Gender";
-
+import { Reading, Readings } from "../interfaces/Readings";
+import {
+  GridActionsCellItem,
+  GridColDef,
+  GridRowId,
+  GridRowModes,
+  GridRowModesModel,
+  GridValidRowModel,
+} from "@mui/x-data-grid";
+import { Alert, Checkbox, Snackbar } from "@mui/material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Close";
-import { GenderSelect } from "../components/fields/GenderSelect";
-import { exportCustomers } from "../helper/import-export/exportCustomers";
-import { CreateCustomerDialog } from "../components/dialogs/CreateCustomerDialog";
-import { parseImportCustomers } from "../helper/import-export/parseImportCustomers";
 
-export const Home = () => {
+import { exportReadings } from "../helper/import-export/exportReadings";
+import { parseImportReadings } from "../helper/import-export/parseImportReadings";
+import { useMutation } from "../hooks/useMutation";
+import { CreateReadingDialog } from "../components/dialogs/CreateReadingDialog";
+import { SingleCustomer } from "../interfaces/Customers";
+import { flattenObject } from "../helper/flatten-object/flattenObject";
+import { unflattenObject } from "../helper/flatten-object/unflattenObject";
+import { KindOfMeterSelect } from "../components/fields/KindOfMeterSelect";
+import { translateKindOfMeter } from "../helper/translate/translateKindOfMeter";
+import { KindOfMeter } from "../interfaces/KindOfMeter";
+import { MeterCountField } from "../components/fields/MeterCountField";
+import { DateField } from "@mui/x-date-pickers";
+import { getLocalDateFormat } from "../helper/getLocalDateFormat";
+import { useParams } from "react-router-dom";
+
+export const CustomerReadings = () => {
+  const { customerId } = useParams();
   const fileInput = useRef<HTMLInputElement>(null);
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
-  const { data, refetch } = useQuery<Customers>(`${getApiBaseUrl()}/customers`);
-  const { send: createCustomer } = useMutation<Customer>(
-    `${getApiBaseUrl()}/customers`,
+  const { data: singleCustomer } = useQuery<SingleCustomer>(
+    `${getApiBaseUrl()}/customers/${customerId}`
+  );
+
+  const { data, refetch } = useQuery<Readings>(
+    `${getApiBaseUrl()}/readings?customer=${customerId}`
+  );
+  const { send: createReading } = useMutation<Reading>(
+    `${getApiBaseUrl()}/readings`,
     "POST"
   );
-  const { send: deleteCustomer } = useMutation(
-    `${getApiBaseUrl()}/customers/{customerId}`,
+  const { send: deleteReading } = useMutation(
+    `${getApiBaseUrl()}/readings/{readingId}`,
     "DELETE"
   );
-  const { send: updateCustomer } = useMutation(
-    `${getApiBaseUrl()}/customers`,
+  const { send: updateReading } = useMutation(
+    `${getApiBaseUrl()}/readings`,
     "PUT"
   );
 
-  const onCreateCustomer = useCallback(
+  const onCreateReading = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
       const formData = new FormData(event.currentTarget);
-      const customer = Object.fromEntries(
+      const formReading = Object.fromEntries(
         formData.entries()
-      ) as unknown as Customer;
+      ) as unknown as Omit<Reading, "customer">;
 
-      customer.birthDate = getLocalDateFormat(customer.birthDate!);
+      const reading: Reading = {
+        ...formReading,
+        customer: singleCustomer?.customer ?? null,
+      };
+      reading.substitute = Boolean(reading.substitute);
+      reading.dateOfReading = getLocalDateFormat(reading.dateOfReading);
 
-      await createCustomer(customer);
+      await createReading(reading);
       await refetch();
       setShowCreateDialog(false);
     },
-    [createCustomer, refetch]
+    [singleCustomer, createReading, refetch]
   );
 
   const onDelete = useCallback(
     async (id: GridRowId) => {
-      await deleteCustomer(undefined, { customerId: id });
+      await deleteReading(undefined, { readingId: id });
       await refetch();
     },
-    [deleteCustomer, refetch]
+    [deleteReading, refetch]
   );
 
   const onEdit = useCallback(
     async (newRow: GridValidRowModel, oldRow: GridValidRowModel) => {
-      if (!/[0-9]{4}-[0-9]{2}-[0-9]{2}/.test(newRow.birthDate as string)) {
+      const newReading = unflattenObject<Reading>(newRow);
+      newReading.customer = singleCustomer?.customer ?? null;
+      if (!/[0-9]{4}-[0-9]{2}-[0-9]{2}/.test(newReading.dateOfReading)) {
         return oldRow;
       }
 
-      await updateCustomer(newRow as Customer);
+      await updateReading(newReading);
       return newRow;
     },
-    [updateCustomer]
+    [updateReading, singleCustomer]
   );
 
   const onEditClick = useCallback(
@@ -161,27 +181,30 @@ export const Home = () => {
         field: "id",
         headerName: "ID",
         minWidth: 300,
-        renderCell: (params) => (
-          <a href={`${window.location.origin}/c/${params.value}`}>
-            {params.value}
-          </a>
+      },
+      {
+        field: "kindOfMeter",
+        headerName: "Zählerart",
+        editable: true,
+        renderCell: (params) =>
+          translateKindOfMeter(params.value as KindOfMeter),
+        renderEditCell: (params) => (
+          <KindOfMeterSelect
+            noLabel
+            defaultValue={params.value as string}
+            onChange={(event) =>
+              void params.api.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: event.target.value,
+              })
+            }
+          />
         ),
       },
       {
-        field: "firstName",
-        headerName: "Vorname",
-        minWidth: 300,
-        editable: true,
-      },
-      {
-        field: "lastName",
-        headerName: "Nachname",
-        minWidth: 300,
-        editable: true,
-      },
-      {
-        field: "birthDate",
-        headerName: "Geburtsdatum",
+        field: "dateOfReading",
+        headerName: "Auslesungsdatum",
         editable: true,
         renderCell: (params) =>
           new Date(params.value as string).toLocaleDateString("de-DE", {
@@ -205,30 +228,70 @@ export const Home = () => {
         ),
       },
       {
-        field: "gender",
-        headerName: "Geschlecht",
+        field: "meterId",
+        headerName: "Zähler-ID",
         editable: true,
-        renderCell: (params) => translateGender(params.value as Gender),
+      },
+      {
+        field: "substitute",
+        headerName: "Zähler ersetzt",
+        editable: true,
+        renderCell: (params) => (
+          <Checkbox
+            name="substitute"
+            checked={Boolean(params.value)}
+            disabled
+          />
+        ),
         renderEditCell: (params) => (
-          <GenderSelect
-            noLabel
-            defaultValue={params.value as string}
+          <Checkbox
+            name="substitute"
+            checked={Boolean(params.value)}
             onChange={(event) =>
               void params.api.setEditCellValue({
                 id: params.id,
                 field: params.field,
-                value: event.target.value,
+                value: event.target.checked,
               })
             }
           />
         ),
       },
+      {
+        field: "meterCount",
+        headerName: "Auslesungswert",
+        editable: true,
+        renderEditCell: (params) => (
+          <MeterCountField
+            noLabel
+            defaultValue={params.value as number}
+            onChange={(event) =>
+              void params.api.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: Number(event.target.value),
+              })
+            }
+          />
+        ),
+      },
+      {
+        field: "comment",
+        headerName: "Kommentar",
+        minWidth: 300,
+        editable: true,
+      },
     ],
     [onDelete, onSaveClick, onCancelClick, rowModesModel, onEditClick]
   );
 
+  const rows = useMemo<GridValidRowModel[]>(
+    () => data?.readings.map((r) => flattenObject(r)) ?? [],
+    [data]
+  );
+
   const onExport = useCallback(
-    (format: "JSON" | "XML" | "CSV") => exportCustomers(format, data),
+    (format: "JSON" | "XML" | "CSV") => exportReadings(format, data),
     [data]
   );
 
@@ -244,25 +307,45 @@ export const Home = () => {
       | "CSV";
     const data = (await file?.text()) ?? "";
 
-    const customers = parseImportCustomers(data, format);
-    if (customers.length === 0) {
+    const readings = parseImportReadings(data, format);
+    if (readings.length === 0) {
       setShowSnackbar(true);
       return;
     }
-    for (const customer of customers) {
-      await createCustomer(customer);
+    for (const reading of readings) {
+      if (reading.customer?.id !== singleCustomer?.customer.id) {
+        continue;
+      }
+      await createReading(reading);
     }
     fileInput.current.value = "";
     await refetch();
-  }, [fileInput, createCustomer, refetch]);
+  }, [fileInput, createReading, refetch, singleCustomer]);
 
+  if (!singleCustomer?.customer) {
+    return (
+      <h2
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          margin: "50px auto",
+        }}
+      >
+        Der Kunde existiert nicht!
+      </h2>
+    );
+  }
   return (
     <>
-      <h1 className="page-title">Alle Kunden:</h1>
+      <h1 className="page-title">
+        {singleCustomer.customer.lastName}, {singleCustomer.customer.firstName}{" "}
+        Auslesungen:
+      </h1>
       <DataTable
         className="data-table"
         columns={columns}
-        rows={data?.customers ?? []}
+        rows={rows}
         rowModesModel={rowModesModel}
         setRowModesModel={setRowModesModel}
         onExport={onExport}
@@ -285,10 +368,10 @@ export const Home = () => {
         </Alert>
       </Snackbar>
 
-      <CreateCustomerDialog
+      <CreateReadingDialog
         open={showCreateDialog}
         onClose={() => setShowCreateDialog(false)}
-        onSubmit={(e) => void onCreateCustomer(e)}
+        onSubmit={(e) => void onCreateReading(e)}
       />
 
       <input

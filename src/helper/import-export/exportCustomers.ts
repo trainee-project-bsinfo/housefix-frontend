@@ -1,6 +1,4 @@
-import { Customer } from "../interfaces/Customers";
-import { Readings } from "../interfaces/Readings";
-import { flattenObject } from "./flattenObject";
+import { Customers } from "../../interfaces/Customers";
 
 const getKeys = (obj: object, prefix = ""): string[] => {
   return Object.entries(obj).flatMap(([key, value]) =>
@@ -10,11 +8,11 @@ const getKeys = (obj: object, prefix = ""): string[] => {
   );
 };
 
-export const exportReadings = (
+export const exportCustomers = (
   format: "JSON" | "CSV" | "XML",
-  data?: Readings
+  data?: Customers
 ) => {
-  const fileName = "Auslesungen";
+  const fileName = "Kunden";
 
   switch (format) {
     case "JSON": {
@@ -33,12 +31,13 @@ export const exportReadings = (
 
     case "CSV": {
       const csv =
-        getKeys(flattenObject(data?.readings[0] ?? {})).join(",") +
+        getKeys(data?.customers[0] ?? {}).join(",") +
         "\n" +
-        data?.readings
-          .map((r) =>
-            Object.values(flattenObject(r))
+        data?.customers
+          .map((c) =>
+            Object.values(c)
               .map((value) =>
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-return
                 typeof value === "string" ? `"${value}"` : value
               )
               .join(",")
@@ -58,29 +57,18 @@ export const exportReadings = (
 
     case "XML": {
       const xml =
-        `<?xml version="1.0" encoding="UTF-8"?>\n<readings>` +
-        data?.readings
-          .map((r) => {
-            const keys = Object.keys(r) as (keyof typeof r)[];
-            let str = "\n\t<reading>\n";
+        `<?xml version="1.0" encoding="UTF-8"?>\n<customers>` +
+        data?.customers
+          .map((c) => {
+            const keys = Object.keys(c) as (keyof typeof c)[];
+            let str = "\n\t<customer>\n";
             keys.forEach((k) => {
-              if (typeof r[k] === "object") {
-                str += `\t\t<${k}>\n`;
-                const cKeys = Object.keys(r[k] ?? {}) as (keyof Customer)[];
-
-                cKeys.forEach((cK) => {
-                  str += `\t\t\t<${cK}>${(r[k] as Customer)[cK]}</${cK}>\n`;
-                });
-                str += `\t\t</${k}>\n`;
-
-                return str;
-              }
-              str += `\t\t<${k}>${r[k]}</${k}>\n`;
+              str += `\t\t<${k}>${c[k]}</${k}>\n`;
             });
             return str;
           })
-          .join("\t</reading>") +
-        `\t</reading>\n</readings>`;
+          .join("\t</customer>") +
+        `\t</customer>\n</customers>`;
       const blob = new Blob([xml], { type: "application/xml" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");

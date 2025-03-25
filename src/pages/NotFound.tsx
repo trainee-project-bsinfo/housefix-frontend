@@ -8,8 +8,8 @@ export const NotFound = () => {
         margin: "0 auto",
       }}
     >
-      <h1 style={{ marginBottom: 0 }}>404</h1>
-      <h2>Not Found</h2>
+      <img src="/404.png" style={{marginTop: "50px", width: "40vw", height: "40vh"}} />
+      <h2>Seite nicht gefunden</h2>
     </div>
   );
 };

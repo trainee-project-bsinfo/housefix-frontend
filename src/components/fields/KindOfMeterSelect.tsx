@@ -9,6 +9,7 @@ interface Props {
   defaultValue?: string;
   withPlaceholder?: boolean;
   onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  noLabel?: boolean;
 }
 
 export const KindOfMeterSelect = ({
@@ -17,6 +18,7 @@ export const KindOfMeterSelect = ({
   defaultValue,
   withPlaceholder,
   onChange,
+  noLabel,
 }: Props) => {
   const [value, setValue] = useState(defaultValue);
 
@@ -32,7 +34,7 @@ export const KindOfMeterSelect = ({
   return (
     <TextField
       select
-      label="Zählerart"
+      label={noLabel ? undefined : "Zählerart"}
       name="kindOfMeter"
       required={required}
       value={value}

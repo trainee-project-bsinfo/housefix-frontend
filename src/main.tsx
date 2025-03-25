@@ -11,6 +11,9 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { de } from "date-fns/locale/de";
 import { GlobalStyles, useMediaQuery } from "@mui/material";
+import { CustomerReadings } from "./pages/CustomerReadings";
+import { AllReadings } from "./pages/AllReadings";
+import { Page } from "./components/Page";
 
 const App = () => {
   const prefersLightMode = useMediaQuery("(prefers-color-scheme: light)");
@@ -44,8 +47,12 @@ const App = () => {
         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={de}>
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="*" element={<NotFound />} />
+              <Route element={<Page />}>
+                <Route path="*" element={<NotFound />} />
+                <Route path="/" element={<Home />} />
+                <Route path="/c/:customerId" element={<CustomerReadings />} />
+                <Route path="/all" element={<AllReadings />} />
+              </Route>
             </Routes>
           </BrowserRouter>
         </LocalizationProvider>

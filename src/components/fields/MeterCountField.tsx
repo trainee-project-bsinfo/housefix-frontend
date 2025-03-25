@@ -6,6 +6,7 @@ interface Props {
   required?: boolean;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   defaultValue?: number;
+  noLabel?: boolean;
 }
 
 export const MeterCountField = ({
@@ -13,6 +14,7 @@ export const MeterCountField = ({
   required,
   onChange,
   defaultValue,
+  noLabel,
 }: Props) => {
   const forbiddenCharsInNumberField = useMemo(
     () => ["e", "+", "-", ".", ","],
@@ -32,7 +34,7 @@ export const MeterCountField = ({
   return (
     <TextField
       type="number"
-      label="Zählerwert"
+      label={noLabel ? undefined : "Zählerwert"}
       name="meterCount"
       required={required}
       variant="filled"

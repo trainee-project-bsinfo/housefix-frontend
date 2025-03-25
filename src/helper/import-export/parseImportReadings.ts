@@ -1,5 +1,5 @@
-import { Customer } from "../interfaces/Customers";
-import { Reading, Readings } from "../interfaces/Readings";
+import { Customer } from "../../interfaces/Customers";
+import { Reading, Readings } from "../../interfaces/Readings";
 
 export const parseImportReadings = (
   data: string,
