@@ -1,0 +1,129 @@
+.machine {
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url("/flames-trans.png"),
+    linear-gradient(rgb(162, 0, 0), rgb(99, 1, 1));
+  width: 100%;
+  max-width: 400px;
+  height: 500px;
+  position: relative;
+}
+
+.title {
+  background-color: #d4af37;
+  padding: 10px;
+  color: black;
+  font-family: "SlotTitle";
+  font-size: 43px;
+  margin-top: 0;
+  border-radius: 20%;
+  user-select: none;
+}
+
+.panel {
+  user-select: none;
+  font-size: 58px;
+  display: flex;
+  background-color: #1e1e1e;
+  border-radius: 20%;
+}
+.panel p {
+  margin: 0;
+  transition: transform 0.5s ease-in-out;
+}
+
+@keyframes spinEffect {
+  0% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(10%);
+  }
+  50% {
+    transform: translateY(-10%);
+  }
+  75% {
+    transform: translateY(5%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+.spinning {
+  animation: spinEffect 0.4s linear infinite;
+}
+
+.panel-column {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.panel-column:first-of-type {
+  border: none;
+}
+
+@keyframes spinEmoji {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.won {
+  box-shadow: 0px 0px 5px #fff;
+  border-radius: 20%;
+  animation: spinEmoji 2.5s linear infinite;
+}
+
+@keyframes popUpEffect {
+  0% {
+    font-size: 48px;
+  }
+  50% {
+    font-size: 80px;
+  }
+  100% {
+    font-size: 48px;
+  }
+}
+.win-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  user-select: none;
+  font-size: 48px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0px 0px 10px rgba(255, 223, 0, 0.8);
+  animation: popUpEffect 1s linear infinite;
+}
+
+.spin-btn {
+  margin-top: 25px !important;
+  width: 100%;
+  max-width: 60px;
+  height: 100%;
+  max-height: 60px;
+  background-color: #d4af37 !important;
+  color: black !important;
+  box-shadow: 0 3px 3px #ffffff;
+}
+.spin-btn:hover {
+  background-color: #eac13b !important;
+}
+.spin-btn:focus {
+  outline: none;
+}
+
+.balance-text {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  user-select: none;
+}

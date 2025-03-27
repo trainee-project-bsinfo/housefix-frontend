@@ -16,6 +16,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+@font-face {
+  font-family: 'SlotTitle';
+  src: url('/slot-title-font.ttf');
+}
+
 body {
   margin: 0;
   padding: 0;

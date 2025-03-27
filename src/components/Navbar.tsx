@@ -12,7 +12,7 @@ export const Navbar = () => {
         <Toolbar disableGutters>
           <img
             onClick={() => (window.location.href = pages.Kunden)}
-            src="/favicon.ico"
+            src="/logo.png"
             height="40px"
             width="40px"
             style={{ marginRight: "10px", cursor: "pointer" }}

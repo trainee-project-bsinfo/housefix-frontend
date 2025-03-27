@@ -34,6 +34,7 @@ import { translateGender } from "../helper/translate/translateGender";
 import { Gender } from "../interfaces/Gender";
 import { DateField } from "@mui/x-date-pickers";
 import { getLocalDateFormat } from "../helper/getLocalDateFormat";
+import { SlotMachine } from "../components/slot/SlotMachine";
 
 export const AllReadings = () => {
   const fileInput = useRef<HTMLInputElement>(null);
@@ -45,7 +46,7 @@ export const AllReadings = () => {
     "createreading_customers"
   );
 
-  const { data, refetch } = useQuery<Readings>(`${getApiBaseUrl()}/readings`);
+  const { data, refetch, errorStatus } = useQuery<Readings>(`${getApiBaseUrl()}/readings`);
   const { send: createReading } = useMutation<Reading>(
     `${getApiBaseUrl()}/readings`,
     "POST"
@@ -361,6 +362,9 @@ export const AllReadings = () => {
     await refetch();
   }, [fileInput, createReading, refetch]);
 
+  if (errorStatus) {
+      return <SlotMachine />;
+    }
   return (
     <>
       <h1 className="page-title">Alle Auslesungen:</h1>

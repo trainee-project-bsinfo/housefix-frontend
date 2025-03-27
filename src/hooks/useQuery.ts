@@ -8,9 +8,12 @@ export const useQuery = <RT>(
   const [errorStatus, setErrorStatus] = useState<number>();
 
   const refetch = useCallback(async () => {
-    const response = await fetch(url);
-    if (!response.ok) {
-      setErrorStatus(response.status);
+    let response: Response | undefined;
+    try {
+      response = await fetch(url);
+    } catch { /* empty */ }
+    if (!response?.ok) {
+      setErrorStatus(response?.status ?? 502);
       setData(undefined);
       return;
     }

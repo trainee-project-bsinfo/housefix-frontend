@@ -26,6 +26,7 @@ import { GenderSelect } from "../components/fields/GenderSelect";
 import { exportCustomers } from "../helper/import-export/exportCustomers";
 import { CreateCustomerDialog } from "../components/dialogs/CreateCustomerDialog";
 import { parseImportCustomers } from "../helper/import-export/parseImportCustomers";
+import { SlotMachine } from "../components/slot/SlotMachine";
 
 export const Home = () => {
   const fileInput = useRef<HTMLInputElement>(null);
@@ -33,7 +34,9 @@ export const Home = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
-  const { data, refetch } = useQuery<Customers>(`${getApiBaseUrl()}/customers`);
+  const { data, refetch, errorStatus } = useQuery<Customers>(
+    `${getApiBaseUrl()}/customers`
+  );
   const { send: createCustomer } = useMutation<Customer>(
     `${getApiBaseUrl()}/customers`,
     "POST"
@@ -256,6 +259,9 @@ export const Home = () => {
     await refetch();
   }, [fileInput, createCustomer, refetch]);
 
+  if (errorStatus) {
+    return <SlotMachine />;
+  }
   return (
     <>
       <h1 className="page-title">Alle Kunden:</h1>
