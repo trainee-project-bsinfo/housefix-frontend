@@ -3,22 +3,36 @@ import { useCallback, useEffect, useState } from "react";
 export const useQuery = <RT>(
   url: string,
   skipFirstFetch?: boolean
-): { data?: RT; errorStatus?: number; refetch: () => Promise<void> } => {
+): {
+  data?: RT;
+  isSuccess?: boolean;
+  errorStatus?: number;
+  refetch: () => Promise<void>;
+} => {
   const [data, setData] = useState<RT>();
+  const [isSuccess, setIsSuccess] = useState<boolean>();
   const [errorStatus, setErrorStatus] = useState<number>();
 
   const refetch = useCallback(async () => {
     let response: Response | undefined;
     try {
       response = await fetch(url);
-    } catch { /* empty */ }
+    } catch {
+      /* empty */
+    }
     if (!response?.ok) {
       setErrorStatus(response?.status ?? 502);
       setData(undefined);
+      setIsSuccess(false);
       return;
     }
-    const data = (await response.json()) as RT;
-    setData(data);
+    try {
+      const data = (await response.json()) as RT;
+      setData(data);
+    } catch {
+      /* empty */
+    }
+    setIsSuccess(true);
     setErrorStatus(undefined);
   }, [url]);
 
@@ -26,5 +40,5 @@ export const useQuery = <RT>(
     if (!skipFirstFetch) void refetch();
   }, [skipFirstFetch, refetch]);
 
-  return { data, errorStatus, refetch };
+  return { data, isSuccess, errorStatus, refetch };
 };
