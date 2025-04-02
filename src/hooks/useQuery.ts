@@ -26,7 +26,7 @@ export const useQuery = <RT>(
       /* empty */
     }
     if (!response?.ok) {
-      setErrorStatus(response?.status ?? 502);
+      setErrorStatus(response?.status ?? 666);
       setData(undefined);
       setIsSuccess(false);
       return;
