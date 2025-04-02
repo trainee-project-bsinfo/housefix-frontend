@@ -50,9 +50,9 @@ export const parseImportReadings = (
             values[varNames.findIndex((n) => n === "meterCount")]
           ),
           meterId: values[varNames.findIndex((n) => n === "meterId")],
-          substitute: Boolean(
-            values[varNames.findIndex((n) => n === "substitute")]
-          ),
+          substitute: JSON.parse(
+            values[varNames.findIndex((n) => n === "substitute")] ?? false
+          ) as boolean,
         } satisfies Reading);
       });
 
