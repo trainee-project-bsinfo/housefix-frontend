@@ -8,10 +8,10 @@ import { useQuery } from "../hooks/useQuery";
 
 export const Login = () => {
   const { isSuccess: isAuthenticated } = useQuery(`${getApiBaseUrl()}/auth`);
-  const { send: login } = useMutation<{ username: string; password: string }>(
-    `${getApiBaseUrl()}/auth`,
-    "POST"
-  );
+  const { send: login, errorStatus } = useMutation<{
+    username: string;
+    password: string;
+  }>(`${getApiBaseUrl()}/auth`, "POST");
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -71,6 +71,11 @@ export const Login = () => {
         margin="dense"
         fullWidth
       />
+      {errorStatus && (
+        <p style={{ margin: "0", color: "red" }}>
+          Ungültige Anmeldeinformationen
+        </p>
+      )}
       <Button sx={{ marginTop: "20px" }} type="submit" variant="contained">
         Login
       </Button>
