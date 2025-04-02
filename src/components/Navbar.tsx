@@ -28,7 +28,7 @@ export const Navbar = () => {
           >
             <div style={{ display: "flex", alignItems: "center" }}>
               <img
-                onClick={() => (window.location.href = pages.Kunden)}
+                onClick={() => (location.href = pages.Kunden)}
                 src="/logo.png"
                 height="40px"
                 width="40px"
@@ -39,7 +39,7 @@ export const Navbar = () => {
                   <Button
                     key={page}
                     onClick={() =>
-                      (window.location.href = pages[page as keyof typeof pages])
+                      (location.href = pages[page as keyof typeof pages])
                     }
                     sx={{
                       my: 2,

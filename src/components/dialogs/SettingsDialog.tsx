@@ -9,6 +9,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useMutation } from "../../hooks/useMutation";
 import { getApiBaseUrl } from "../../helper/getApiBaseUrl";
 import { useQuery } from "../../hooks/useQuery";
+import { useCache } from "../../hooks/useCache";
+import { routes } from "../../main";
+import { removeToken } from "../../helper/token";
 
 export const SettingsDialog = ({
   open,
@@ -17,8 +20,13 @@ export const SettingsDialog = ({
   open: boolean;
   onClose: () => void;
 }) => {
+  const { value: isAuthenticated } = useCache<boolean | undefined>(
+    "all_is_auth"
+  );
+
   const { isSuccess } = useQuery(`${getApiBaseUrl()}/health`);
   const { send: resetDB } = useMutation(`${getApiBaseUrl()}/setupDB`, "DELETE");
+  const { send: logout } = useMutation(`${getApiBaseUrl()}/auth`, "DELETE");
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
@@ -35,7 +43,9 @@ export const SettingsDialog = ({
       >
         <CloseIcon />
       </IconButton>
-      <DialogContent>
+      <DialogContent
+        sx={{ display: "flex", flexDirection: "column", rowGap: "20px" }}
+      >
         <Button
           onClick={() => {
             void (async () => {
@@ -45,9 +55,22 @@ export const SettingsDialog = ({
           }}
           color="warning"
           variant="outlined"
-          disabled={!isSuccess}
+          disabled={!isSuccess || !isAuthenticated}
         >
           Datenbank zurücksetzen
+        </Button>
+        <Button
+          onClick={() => {
+            void (async () => {
+              await logout();
+              removeToken();
+              location.href = routes.login;
+            })();
+          }}
+          variant="outlined"
+          disabled={!isAuthenticated}
+        >
+          Ausloggen
         </Button>
       </DialogContent>
     </Dialog>

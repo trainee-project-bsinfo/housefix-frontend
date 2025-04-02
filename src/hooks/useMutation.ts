@@ -1,9 +1,13 @@
 import { useCallback, useState } from "react";
+import { getToken } from "../helper/token";
 
 export const useMutation = <BT>(
   url: string,
   method: "POST" | "PUT" | "DELETE"
-): { errorStatus?: number; send: (body?: BT, vars?: object) => Promise<Response> } => {
+): {
+  errorStatus?: number;
+  send: (body?: BT, vars?: object) => Promise<Response>;
+} => {
   const [errorStatus, setErrorStatus] = useState<number>();
 
   const send = useCallback(
@@ -15,10 +19,13 @@ export const useMutation = <BT>(
         }
       }
 
+      const token = getToken();
+
       const response = await fetch(filledUrl, {
         method,
         headers: {
           "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
         },
         body: body ? JSON.stringify(body) : undefined,
       });

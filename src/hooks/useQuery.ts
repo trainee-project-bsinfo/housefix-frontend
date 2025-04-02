@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { getToken } from "../helper/token";
 
 export const useQuery = <RT>(
   url: string,
@@ -14,9 +15,13 @@ export const useQuery = <RT>(
   const [errorStatus, setErrorStatus] = useState<number>();
 
   const refetch = useCallback(async () => {
+    const token = getToken();
+
     let response: Response | undefined;
     try {
-      response = await fetch(url);
+      response = await fetch(url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
     } catch {
       /* empty */
     }

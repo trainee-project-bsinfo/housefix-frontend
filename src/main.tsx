@@ -14,6 +14,15 @@ import { GlobalStyles, useMediaQuery } from "@mui/material";
 import { CustomerReadings } from "./pages/CustomerReadings";
 import { AllReadings } from "./pages/AllReadings";
 import { Page } from "./components/Page";
+import { Login } from "./pages/Login";
+
+export const routes = {
+  unknown: "*",
+  home: "/",
+  customerReadings: "/c/:customerId",
+  allReadings: "/all",
+  login: "/login",
+};
 
 const App = () => {
   const prefersLightMode = useMediaQuery("(prefers-color-scheme: light)");
@@ -48,11 +57,15 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route element={<Page />}>
-                <Route path="*" element={<NotFound />} />
-                <Route path="/" element={<Home />} />
-                <Route path="/c/:customerId" element={<CustomerReadings />} />
-                <Route path="/all" element={<AllReadings />} />
+                <Route path={routes.unknown} element={<NotFound />} />
+                <Route path={routes.home} element={<Home />} />
+                <Route
+                  path={routes.customerReadings}
+                  element={<CustomerReadings />}
+                />
+                <Route path={routes.allReadings} element={<AllReadings />} />
               </Route>
+              <Route path={routes.login} element={<Login />} />
             </Routes>
           </BrowserRouter>
         </LocalizationProvider>
