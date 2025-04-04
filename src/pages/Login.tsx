@@ -73,7 +73,9 @@ export const Login = () => {
       />
       {errorStatus && (
         <p style={{ margin: "0", color: "red" }}>
-          Ungültige Anmeldeinformationen
+          {errorStatus === 666
+            ? "Server nicht erreichbar"
+            : "Ungültige Anmeldeinformationen"}
         </p>
       )}
       <Button sx={{ marginTop: "20px" }} type="submit" variant="contained">

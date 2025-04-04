@@ -11,7 +11,7 @@ export const useMutation = <BT>(
   const [errorStatus, setErrorStatus] = useState<number>();
 
   const send = useCallback(
-    async (body?: BT, vars?: object): Promise<Response> => {
+    async (body?: BT, vars?: object) => {
       let filledUrl = url;
       if (vars && /\{\w+\}/gi.test(url)) {
         for (const [key, value] of Object.entries(vars)) {
@@ -21,17 +21,25 @@ export const useMutation = <BT>(
 
       const token = getToken();
 
-      const response = await fetch(filledUrl, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-        body: body ? JSON.stringify(body) : undefined,
-      });
-      if (!response.ok) {
-        setErrorStatus(response.status);
-        return response;
+      let response: Response | undefined;
+      try {
+        response = await fetch(filledUrl, {
+          method,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+          body: body ? JSON.stringify(body) : undefined,
+        });
+      } catch {
+        /*empty*/
+      }
+      if (!response?.ok) {
+        const serverNotAvailableCode = 666;
+        setErrorStatus(response?.status ?? serverNotAvailableCode);
+        return (
+          response ?? new Response(null, { status: serverNotAvailableCode })
+        );
       }
       setErrorStatus(undefined);
       return response;
