@@ -38,7 +38,7 @@ export const Login = () => {
         }
       }
     },
-    [login]
+    [login],
   );
 
   return (

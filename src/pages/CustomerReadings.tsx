@@ -32,6 +32,7 @@ import { MeterCountField } from "../components/fields/MeterCountField";
 import { DateField } from "@mui/x-date-pickers";
 import { getLocalDateFormat } from "../helper/getLocalDateFormat";
 import { useParams } from "react-router-dom";
+import { FilterFields } from "../components/FilterFields";
 
 export const CustomerReadings = () => {
   const { customerId } = useParams();
@@ -39,25 +40,32 @@ export const CustomerReadings = () => {
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+  const [startDate, setStartDate] = useState<Date>();
+  const [endDate, setEndDate] = useState<Date>();
+  const [kindOfMeterFilter, setKindOfMeterFilter] = useState<KindOfMeter>();
 
   const { data: singleCustomer } = useQuery<SingleCustomer>(
-    `${getApiBaseUrl()}/customers/${customerId}`
+    `${getApiBaseUrl()}/customers/${customerId}`,
   );
 
   const { data, refetch } = useQuery<Readings>(
-    `${getApiBaseUrl()}/readings?customer=${customerId}`
+    `${getApiBaseUrl()}/readings?customer=${customerId}&${
+      kindOfMeterFilter ? `kindOfMeter=${kindOfMeterFilter}&` : ""
+    }${startDate ? `start=${getLocalDateFormat(startDate)}&` : ""}${
+      endDate ? `end=${getLocalDateFormat(endDate)}` : ""
+    }`,
   );
   const { send: createReading } = useMutation<Reading>(
     `${getApiBaseUrl()}/readings`,
-    "POST"
+    "POST",
   );
   const { send: deleteReading } = useMutation(
     `${getApiBaseUrl()}/readings/{readingId}`,
-    "DELETE"
+    "DELETE",
   );
   const { send: updateReading } = useMutation(
     `${getApiBaseUrl()}/readings`,
-    "PUT"
+    "PUT",
   );
 
   const onCreateReading = useCallback(
@@ -66,7 +74,7 @@ export const CustomerReadings = () => {
 
       const formData = new FormData(event.currentTarget);
       const formReading = Object.fromEntries(
-        formData.entries()
+        formData.entries(),
       ) as unknown as Omit<Reading, "customer">;
 
       const reading: Reading = {
@@ -80,7 +88,7 @@ export const CustomerReadings = () => {
       await refetch();
       setShowCreateDialog(false);
     },
-    [singleCustomer, createReading, refetch]
+    [singleCustomer, createReading, refetch],
   );
 
   const onDelete = useCallback(
@@ -88,7 +96,7 @@ export const CustomerReadings = () => {
       await deleteReading(undefined, { readingId: id });
       await refetch();
     },
-    [deleteReading, refetch]
+    [deleteReading, refetch],
   );
 
   const onEdit = useCallback(
@@ -102,20 +110,20 @@ export const CustomerReadings = () => {
       await updateReading(newReading);
       return newRow;
     },
-    [updateReading, singleCustomer]
+    [updateReading, singleCustomer],
   );
 
   const onEditClick = useCallback(
     (id: GridRowId) => () => {
       setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
     },
-    [rowModesModel]
+    [rowModesModel],
   );
   const onSaveClick = useCallback(
     (id: GridRowId) => () => {
       setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
     },
-    [rowModesModel]
+    [rowModesModel],
   );
   const onCancelClick = useCallback(
     (id: GridRowId) => () => {
@@ -124,7 +132,7 @@ export const CustomerReadings = () => {
         [id]: { mode: GridRowModes.View, ignoreModifications: true },
       });
     },
-    [rowModesModel]
+    [rowModesModel],
   );
 
   const columns = useMemo<GridColDef[]>(
@@ -282,17 +290,17 @@ export const CustomerReadings = () => {
         editable: true,
       },
     ],
-    [onDelete, onSaveClick, onCancelClick, rowModesModel, onEditClick]
+    [onDelete, onSaveClick, onCancelClick, rowModesModel, onEditClick],
   );
 
   const rows = useMemo<GridValidRowModel[]>(
     () => data?.readings.map((r) => flattenObject(r)) ?? [],
-    [data]
+    [data],
   );
 
   const onExport = useCallback(
     (format: "JSON" | "XML" | "CSV") => exportReadings(format, data),
-    [data]
+    [data],
   );
 
   const onImport = useCallback(async () => {
@@ -342,6 +350,11 @@ export const CustomerReadings = () => {
         {singleCustomer.customer.lastName}, {singleCustomer.customer.firstName}{" "}
         Auslesungen:
       </h1>
+      <FilterFields
+        setEndDate={setEndDate}
+        setStartDate={setStartDate}
+        setKindOfMeter={setKindOfMeterFilter}
+      />
       <DataTable
         className="data-table"
         columns={columns}

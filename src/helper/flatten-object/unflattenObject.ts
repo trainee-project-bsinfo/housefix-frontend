@@ -1,6 +1,6 @@
 export const unflattenObject = <T extends object>(
   obj: Record<string, unknown>,
-  delimiter = "."
+  delimiter = ".",
 ): T => {
   const result: Record<string, unknown> = {};
 

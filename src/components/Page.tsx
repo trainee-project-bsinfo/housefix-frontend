@@ -8,24 +8,24 @@ import { useCache } from "../hooks/useCache";
 
 export const Page = () => {
   const { isSuccess: isAuthenticated, errorStatus } = useQuery(
-    `${getApiBaseUrl()}/auth`
+    `${getApiBaseUrl()}/auth`,
   );
   const { setValue: setIsAuthenticated } = useCache<boolean | undefined>(
-    "all_is_auth"
+    "all_is_auth",
   );
 
   useEffect(() => {
     setIsAuthenticated(isAuthenticated);
     const validRoutes = Object.values(routes).filter(
-      (route) => ![routes.login, routes.unknown].includes(route)
+      (route) => ![routes.login, routes.unknown].includes(route),
     );
     const isValidRoute = validRoutes.some((route) =>
-      matchPath(route, location.pathname)
+      matchPath(route, location.pathname),
     );
 
     if (
       [routes.allReadings, routes.home].some((r) =>
-        matchPath(r, location.pathname)
+        matchPath(r, location.pathname),
       ) &&
       errorStatus === 666
     ) {

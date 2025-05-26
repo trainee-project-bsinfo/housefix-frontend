@@ -3,7 +3,7 @@ import { getToken } from "../helper/token";
 
 export const useMutation = <BT>(
   url: string,
-  method: "POST" | "PUT" | "DELETE"
+  method: "POST" | "PUT" | "DELETE",
 ): {
   errorStatus?: number;
   send: (body?: BT, vars?: object) => Promise<Response>;
@@ -44,7 +44,7 @@ export const useMutation = <BT>(
       setErrorStatus(undefined);
       return response;
     },
-    [url, method]
+    [url, method],
   );
 
   return { errorStatus, send };

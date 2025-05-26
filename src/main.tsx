@@ -41,7 +41,7 @@ const App = () => {
         warning: { main: "#ff0000" },
       },
     },
-    deDE
+    deDE,
   );
 
   return (

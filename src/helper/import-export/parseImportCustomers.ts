@@ -2,7 +2,7 @@ import { Customer, Customers } from "../../interfaces/Customers";
 
 export const parseImportCustomers = (
   data: string,
-  format: "JSON" | "CSV" | "XML"
+  format: "JSON" | "CSV" | "XML",
 ): Customer[] => {
   switch (format) {
     case "JSON": {

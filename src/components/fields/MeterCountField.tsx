@@ -18,7 +18,7 @@ export const MeterCountField = ({
 }: Props) => {
   const forbiddenCharsInNumberField = useMemo(
     () => ["e", "+", "-", ".", ","],
-    []
+    [],
   );
 
   const [value, setValue] = useState(defaultValue);

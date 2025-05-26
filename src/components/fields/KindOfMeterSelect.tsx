@@ -8,8 +8,11 @@ interface Props {
   required?: boolean;
   defaultValue?: string;
   withPlaceholder?: boolean;
+  withAll?: boolean;
   onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   noLabel?: boolean;
+  fullWidth?: boolean;
+  className?: string;
 }
 
 export const KindOfMeterSelect = ({
@@ -17,8 +20,11 @@ export const KindOfMeterSelect = ({
   required,
   defaultValue,
   withPlaceholder,
+  withAll,
   onChange,
   noLabel,
+  fullWidth = true,
+  className,
 }: Props) => {
   const [value, setValue] = useState(defaultValue);
 
@@ -41,13 +47,15 @@ export const KindOfMeterSelect = ({
       onChange={handleChange}
       variant="filled"
       margin={margin}
-      fullWidth
+      fullWidth={fullWidth}
+      className={className}
     >
       {withPlaceholder && (
         <MenuItem value="" disabled>
           Bitte wählen...
         </MenuItem>
       )}
+      {withAll && <MenuItem value="">Alle</MenuItem>}
       {Object.values(KindOfMeter).map((kindOfMeter) => (
         <MenuItem key={kindOfMeter} value={kindOfMeter}>
           {translateKindOfMeter(kindOfMeter)}

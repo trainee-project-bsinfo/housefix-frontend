@@ -4,13 +4,13 @@ const getKeys = (obj: object, prefix = ""): string[] => {
   return Object.entries(obj).flatMap(([key, value]) =>
     value && typeof value === "object" && !Array.isArray(value)
       ? getKeys(value as object, `${prefix}${key}.`)
-      : `${prefix}${key}`
+      : `${prefix}${key}`,
   );
 };
 
 export const exportCustomers = (
   format: "JSON" | "CSV" | "XML",
-  data?: Customers
+  data?: Customers,
 ) => {
   const fileName = "Kunden";
 
@@ -38,9 +38,9 @@ export const exportCustomers = (
             Object.values(c)
               .map((value) =>
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-                typeof value === "string" ? `"${value}"` : value
+                typeof value === "string" ? `"${value}"` : value,
               )
-              .join(",")
+              .join(","),
           )
           .join("\n");
       const blob = new Blob([csv], { type: "text/csv" });

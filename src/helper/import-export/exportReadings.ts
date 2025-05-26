@@ -6,13 +6,13 @@ const getKeys = (obj: object, prefix = ""): string[] => {
   return Object.entries(obj).flatMap(([key, value]) =>
     value && typeof value === "object" && !Array.isArray(value)
       ? getKeys(value as object, `${prefix}${key}.`)
-      : `${prefix}${key}`
+      : `${prefix}${key}`,
   );
 };
 
 export const exportReadings = (
   format: "JSON" | "CSV" | "XML",
-  data?: Readings
+  data?: Readings,
 ) => {
   const fileName = "Auslesungen";
 
@@ -39,9 +39,9 @@ export const exportReadings = (
           .map((r) =>
             Object.values(flattenObject(r))
               .map((value) =>
-                typeof value === "string" ? `"${value}"` : value
+                typeof value === "string" ? `"${value}"` : value,
               )
-              .join(",")
+              .join(","),
           )
           .join("\n");
       const blob = new Blob([csv], { type: "text/csv" });

@@ -31,7 +31,10 @@ export const DataTable = ({
   onExport: (format: "JSON" | "XML" | "CSV") => void;
   onImport: () => Promise<void>;
   onCreate: () => void;
-  onEdit: (newRow: GridValidRowModel, oldRow: GridValidRowModel) => GridValidRowModel;
+  onEdit: (
+    newRow: GridValidRowModel,
+    oldRow: GridValidRowModel,
+  ) => GridValidRowModel;
 }) => {
   const onRowEditStop: GridEventListener<"rowEditStop"> = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {

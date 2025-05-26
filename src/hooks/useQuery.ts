@@ -3,7 +3,7 @@ import { getToken } from "../helper/token";
 
 export const useQuery = <RT>(
   url: string,
-  skipFirstFetch?: boolean
+  skipFirstFetch?: boolean,
 ): {
   data?: RT;
   isSuccess?: boolean;

@@ -35,29 +35,39 @@ import { Gender } from "../interfaces/Gender";
 import { DateField } from "@mui/x-date-pickers";
 import { getLocalDateFormat } from "../helper/getLocalDateFormat";
 import { SlotMachine } from "../components/slot/SlotMachine";
+import { FilterFields } from "../components/FilterFields";
 
 export const AllReadings = () => {
   const fileInput = useRef<HTMLInputElement>(null);
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+  const [startDate, setStartDate] = useState<Date>();
+  const [endDate, setEndDate] = useState<Date>();
+  const [kindOfMeterFilter, setKindOfMeterFilter] = useState<KindOfMeter>();
 
   const { value: customers } = useCache<Customers | undefined>(
-    "createreading_customers"
+    "createreading_customers",
   );
 
-  const { data, refetch, errorStatus } = useQuery<Readings>(`${getApiBaseUrl()}/readings`);
+  const { data, refetch, errorStatus } = useQuery<Readings>(
+    `${getApiBaseUrl()}/readings?${
+      kindOfMeterFilter ? `kindOfMeter=${kindOfMeterFilter}&` : ""
+    }${startDate ? `start=${getLocalDateFormat(startDate)}&` : ""}${
+      endDate ? `end=${getLocalDateFormat(endDate)}` : ""
+    }`,
+  );
   const { send: createReading } = useMutation<Reading>(
     `${getApiBaseUrl()}/readings`,
-    "POST"
+    "POST",
   );
   const { send: deleteReading } = useMutation(
     `${getApiBaseUrl()}/readings/{readingId}`,
-    "DELETE"
+    "DELETE",
   );
   const { send: updateReading } = useMutation(
     `${getApiBaseUrl()}/readings`,
-    "PUT"
+    "PUT",
   );
 
   const onCreateReading = useCallback(
@@ -66,7 +76,7 @@ export const AllReadings = () => {
 
       const formData = new FormData(event.currentTarget);
       const formReading = Object.fromEntries(
-        formData.entries()
+        formData.entries(),
       ) as unknown as Omit<Reading, "customer"> & { customerId?: string };
 
       const customer =
@@ -88,7 +98,7 @@ export const AllReadings = () => {
       await refetch();
       setShowCreateDialog(false);
     },
-    [customers, createReading, refetch]
+    [customers, createReading, refetch],
   );
 
   const onDelete = useCallback(
@@ -96,7 +106,7 @@ export const AllReadings = () => {
       await deleteReading(undefined, { readingId: id });
       await refetch();
     },
-    [deleteReading, refetch]
+    [deleteReading, refetch],
   );
 
   const onEdit = useCallback(
@@ -109,20 +119,20 @@ export const AllReadings = () => {
       await updateReading(newReading);
       return newRow;
     },
-    [updateReading]
+    [updateReading],
   );
 
   const onEditClick = useCallback(
     (id: GridRowId) => () => {
       setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
     },
-    [rowModesModel]
+    [rowModesModel],
   );
   const onSaveClick = useCallback(
     (id: GridRowId) => () => {
       setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
     },
-    [rowModesModel]
+    [rowModesModel],
   );
   const onCancelClick = useCallback(
     (id: GridRowId) => () => {
@@ -131,7 +141,7 @@ export const AllReadings = () => {
         [id]: { mode: GridRowModes.View, ignoreModifications: true },
       });
     },
-    [rowModesModel]
+    [rowModesModel],
   );
 
   const columns = useMemo<GridColDef[]>(
@@ -325,17 +335,17 @@ export const AllReadings = () => {
         editable: true,
       },
     ],
-    [onDelete, onSaveClick, onCancelClick, rowModesModel, onEditClick]
+    [onDelete, onSaveClick, onCancelClick, rowModesModel, onEditClick],
   );
 
   const rows = useMemo<GridValidRowModel[]>(
     () => data?.readings.map((r) => flattenObject(r)) ?? [],
-    [data]
+    [data],
   );
 
   const onExport = useCallback(
     (format: "JSON" | "XML" | "CSV") => exportReadings(format, data),
-    [data]
+    [data],
   );
 
   const onImport = useCallback(async () => {
@@ -363,11 +373,16 @@ export const AllReadings = () => {
   }, [fileInput, createReading, refetch]);
 
   if (errorStatus) {
-      return <SlotMachine />;
-    }
+    return <SlotMachine />;
+  }
   return (
     <>
       <h1 className="page-title">Alle Auslesungen:</h1>
+      <FilterFields
+        setEndDate={setEndDate}
+        setStartDate={setStartDate}
+        setKindOfMeter={setKindOfMeterFilter}
+      />
       <DataTable
         className="data-table"
         columns={columns}

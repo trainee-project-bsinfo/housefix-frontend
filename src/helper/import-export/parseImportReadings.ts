@@ -3,7 +3,7 @@ import { Reading, Readings } from "../../interfaces/Readings";
 
 export const parseImportReadings = (
   data: string,
-  format: "JSON" | "CSV" | "XML"
+  format: "JSON" | "CSV" | "XML",
 ): Reading[] => {
   switch (format) {
     case "JSON": {
@@ -47,11 +47,11 @@ export const parseImportReadings = (
           },
           comment: values[varNames.findIndex((n) => n === "comment")],
           meterCount: Number(
-            values[varNames.findIndex((n) => n === "meterCount")]
+            values[varNames.findIndex((n) => n === "meterCount")],
           ),
           meterId: values[varNames.findIndex((n) => n === "meterId")],
           substitute: JSON.parse(
-            values[varNames.findIndex((n) => n === "substitute")] ?? false
+            values[varNames.findIndex((n) => n === "substitute")] ?? false,
           ) as boolean,
         } satisfies Reading);
       });
@@ -66,22 +66,32 @@ export const parseImportReadings = (
       parsed.querySelectorAll("readings > reading").forEach((reading) => {
         readings.push({
           id: reading.querySelector("id")?.textContent ?? "",
-          kindOfMeter: reading.querySelector("kindOfMeter")?.textContent as Reading["kindOfMeter"],
-          dateOfReading: reading.querySelector("dateOfReading")?.textContent ?? "",
+          kindOfMeter: reading.querySelector("kindOfMeter")
+            ?.textContent as Reading["kindOfMeter"],
+          dateOfReading:
+            reading.querySelector("dateOfReading")?.textContent ?? "",
           customer: {
             id: reading.querySelector("customer > id")?.textContent ?? "",
-            firstName: reading.querySelector("customer > firstName")?.textContent ?? "",
-            lastName: reading.querySelector("customer > lastName")?.textContent ?? "",
-            birthDate: reading.querySelector("customer > birthDate")?.textContent ?? "",
-            gender: reading.querySelector("customer > gender")?.textContent as Customer["gender"],
+            firstName:
+              reading.querySelector("customer > firstName")?.textContent ?? "",
+            lastName:
+              reading.querySelector("customer > lastName")?.textContent ?? "",
+            birthDate:
+              reading.querySelector("customer > birthDate")?.textContent ?? "",
+            gender: reading.querySelector("customer > gender")
+              ?.textContent as Customer["gender"],
           },
           comment: reading.querySelector("comment")?.textContent ?? "",
-          meterCount: Number(reading.querySelector("meterCount")?.textContent ?? ""),
+          meterCount: Number(
+            reading.querySelector("meterCount")?.textContent ?? "",
+          ),
           meterId: reading.querySelector("meterId")?.textContent ?? "",
-          substitute: Boolean(reading.querySelector("substitute")?.textContent ?? ""),
+          substitute: Boolean(
+            reading.querySelector("substitute")?.textContent ?? "",
+          ),
         } satisfies Reading);
       });
-      
+
       return readings;
     }
   }

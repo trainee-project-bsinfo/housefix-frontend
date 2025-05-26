@@ -14,16 +14,16 @@ export const useCreateReadingDialog = (open: boolean) => {
   const [selectedCustomer, setSelectedCustomer] = useState("");
 
   const { setValue: setCache } = useCache<Customers | undefined>(
-    "createreading_customers"
+    "createreading_customers",
   );
 
   const { data: apiData, refetch } = useQuery<Customers>(
     `${getApiBaseUrl()}/customers`,
-    true
+    true,
   );
   const { send: createCustomer } = useMutation<Customer>(
     `${getApiBaseUrl()}/customers`,
-    "POST"
+    "POST",
   );
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export const useCreateReadingDialog = (open: boolean) => {
 
       const formData = new FormData(event.currentTarget);
       const customer = Object.fromEntries(
-        formData.entries()
+        formData.entries(),
       ) as unknown as Customer;
 
       const [day, month, year] = customer.birthDate?.split(".") ?? [];
@@ -56,7 +56,7 @@ export const useCreateReadingDialog = (open: boolean) => {
       setShowCreateDialog(false);
       setSelectedCustomer(cc.customer.id);
     },
-    [createCustomer, refetch]
+    [createCustomer, refetch],
   );
 
   return {

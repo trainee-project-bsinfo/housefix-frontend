@@ -114,7 +114,7 @@ export const SlotMachine = () => {
       columnIdx: number,
       duration: number,
       startSpeed: number,
-      endSpeed: number
+      endSpeed: number,
     ) => {
       let elapsed = 0;
 
@@ -132,7 +132,7 @@ export const SlotMachine = () => {
         setIconsToShow((prev) => {
           const newIconsToShow = prev.slice();
           const firstIconIdx = columns.current[columnIdx].findIndex(
-            (c) => c.icon === prev[columnIdx][0]
+            (c) => c.icon === prev[columnIdx][0],
           );
 
           newIconsToShow[columnIdx] = [

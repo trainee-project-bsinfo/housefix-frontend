@@ -35,19 +35,19 @@ export const Home = () => {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
   const { data, refetch, errorStatus } = useQuery<Customers>(
-    `${getApiBaseUrl()}/customers`
+    `${getApiBaseUrl()}/customers`,
   );
   const { send: createCustomer } = useMutation<Customer>(
     `${getApiBaseUrl()}/customers`,
-    "POST"
+    "POST",
   );
   const { send: deleteCustomer } = useMutation(
     `${getApiBaseUrl()}/customers/{customerId}`,
-    "DELETE"
+    "DELETE",
   );
   const { send: updateCustomer } = useMutation(
     `${getApiBaseUrl()}/customers`,
-    "PUT"
+    "PUT",
   );
 
   const onCreateCustomer = useCallback(
@@ -56,7 +56,7 @@ export const Home = () => {
 
       const formData = new FormData(event.currentTarget);
       const customer = Object.fromEntries(
-        formData.entries()
+        formData.entries(),
       ) as unknown as Customer;
 
       customer.birthDate = getLocalDateFormat(customer.birthDate!);
@@ -65,7 +65,7 @@ export const Home = () => {
       await refetch();
       setShowCreateDialog(false);
     },
-    [createCustomer, refetch]
+    [createCustomer, refetch],
   );
 
   const onDelete = useCallback(
@@ -73,7 +73,7 @@ export const Home = () => {
       await deleteCustomer(undefined, { customerId: id });
       await refetch();
     },
-    [deleteCustomer, refetch]
+    [deleteCustomer, refetch],
   );
 
   const onEdit = useCallback(
@@ -85,20 +85,20 @@ export const Home = () => {
       await updateCustomer(newRow as Customer);
       return newRow;
     },
-    [updateCustomer]
+    [updateCustomer],
   );
 
   const onEditClick = useCallback(
     (id: GridRowId) => () => {
       setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
     },
-    [rowModesModel]
+    [rowModesModel],
   );
   const onSaveClick = useCallback(
     (id: GridRowId) => () => {
       setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
     },
-    [rowModesModel]
+    [rowModesModel],
   );
   const onCancelClick = useCallback(
     (id: GridRowId) => () => {
@@ -107,7 +107,7 @@ export const Home = () => {
         [id]: { mode: GridRowModes.View, ignoreModifications: true },
       });
     },
-    [rowModesModel]
+    [rowModesModel],
   );
 
   const columns = useMemo<GridColDef[]>(
@@ -227,12 +227,12 @@ export const Home = () => {
         ),
       },
     ],
-    [onDelete, onSaveClick, onCancelClick, rowModesModel, onEditClick]
+    [onDelete, onSaveClick, onCancelClick, rowModesModel, onEditClick],
   );
 
   const onExport = useCallback(
     (format: "JSON" | "XML" | "CSV") => exportCustomers(format, data),
-    [data]
+    [data],
   );
 
   const onImport = useCallback(async () => {

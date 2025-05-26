@@ -28,7 +28,7 @@ export const useCache = <VT>(key: string) => {
       cache.set(key, newValue);
       notifyListeners();
     },
-    [key, notifyListeners]
+    [key, notifyListeners],
   );
 
   return { value: state, setValue };

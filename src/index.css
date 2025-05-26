@@ -17,8 +17,8 @@
 }
 
 @font-face {
-  font-family: 'SlotTitle';
-  src: url('/slot-title-font.ttf');
+  font-family: "SlotTitle";
+  src: url("/slot-title-font.ttf");
 }
 
 body {

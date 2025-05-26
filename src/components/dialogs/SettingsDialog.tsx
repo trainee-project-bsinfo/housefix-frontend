@@ -21,7 +21,7 @@ export const SettingsDialog = ({
   onClose: () => void;
 }) => {
   const { value: isAuthenticated } = useCache<boolean | undefined>(
-    "all_is_auth"
+    "all_is_auth",
   );
 
   const { isSuccess } = useQuery(`${getApiBaseUrl()}/health`);
